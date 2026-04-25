@@ -1,0 +1,1565 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NVIDIA GPU 11 — DGX, HGX, MGX Datacenter Platforms</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #0a0a0a;
+            --bg-card: #0d1117;
+            --bg-code: #161b22;
+            --text-primary: #e6edf3;
+            --text-secondary: #8b949e;
+            --accent: #76B900;
+            --accent-dim: #76B90044;
+            --accent-glow: #76B90033;
+            --border: #21262d;
+            --font-display: 'Space Grotesk', sans-serif;
+            --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+            --font-body: 'Inter', sans-serif;
+            --max-width: 900px;
+        }
+
+        *, *::before, *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            font-family: var(--font-body);
+            font-size: 17px;
+            line-height: 1.7;
+            overflow-x: hidden;
+        }
+
+        /* ── Header ── */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem 1.5rem;
+            text-align: center;
+            position: relative;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, var(--accent-glow) 0%, transparent 70%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .hero > * {
+            position: relative;
+            z-index: 1;
+        }
+
+        .series-label {
+            font-family: var(--font-mono);
+            font-size: 0.85rem;
+            color: var(--accent);
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            margin-bottom: 1rem;
+        }
+
+        .hero h1 {
+            font-family: var(--font-display);
+            font-size: clamp(2rem, 5vw, 3.2rem);
+            font-weight: 700;
+            color: var(--text-primary);
+            line-height: 1.2;
+            margin-bottom: 1rem;
+        }
+
+        .hero h1 .accent {
+            color: var(--accent);
+        }
+
+        .hero .subtitle {
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+            max-width: 600px;
+            margin-bottom: 2rem;
+        }
+
+        /* ── Tag Pills ── */
+        .tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            justify-content: center;
+            margin-bottom: 2.5rem;
+        }
+
+        .tag {
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            padding: 0.25rem 0.75rem;
+            border-radius: 999px;
+            border: 1px solid var(--accent);
+            color: var(--accent);
+            background: var(--accent-dim);
+            white-space: nowrap;
+        }
+
+        /* ── Pipeline Flow Bar ── */
+        .pipeline {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: center;
+            gap: 0.25rem;
+            margin-bottom: 1rem;
+            max-width: var(--max-width);
+        }
+
+        .pipeline-step {
+            font-family: var(--font-mono);
+            font-size: 0.7rem;
+            padding: 0.3rem 0.7rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            color: var(--text-secondary);
+            white-space: nowrap;
+        }
+
+        .pipeline-arrow {
+            color: var(--accent);
+            font-size: 0.9rem;
+            font-weight: 700;
+        }
+
+        /* ── Slides ── */
+        .slide {
+            min-height: 100vh;
+            max-width: var(--max-width);
+            margin: 0 auto;
+            padding: 4rem 1.5rem;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .slide-number {
+            font-family: var(--font-display);
+            font-size: 5rem;
+            font-weight: 700;
+            color: var(--accent-dim);
+            position: absolute;
+            top: 2rem;
+            right: 1.5rem;
+            line-height: 1;
+            user-select: none;
+        }
+
+        .slide h2 {
+            font-family: var(--font-display);
+            font-size: 1.9rem;
+            font-weight: 700;
+            color: var(--accent);
+            margin-bottom: 1.5rem;
+            line-height: 1.25;
+        }
+
+        .slide h3 {
+            font-family: var(--font-display);
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-top: 1.5rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .slide p {
+            margin-bottom: 1rem;
+            color: var(--text-secondary);
+        }
+
+        .slide p strong {
+            color: var(--text-primary);
+        }
+
+        .slide ul, .slide ol {
+            margin-bottom: 1rem;
+            padding-left: 1.5rem;
+            color: var(--text-secondary);
+        }
+
+        .slide li {
+            margin-bottom: 0.4rem;
+        }
+
+        .slide li strong {
+            color: var(--text-primary);
+        }
+
+        /* ── Code Blocks ── */
+        .code-block {
+            background: var(--bg-code);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            margin: 1.25rem 0;
+            overflow: hidden;
+        }
+
+        .code-header {
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            color: var(--accent);
+            background: rgba(118, 185, 0, 0.08);
+            padding: 0.4rem 1rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .code-block pre {
+            margin: 0;
+            padding: 1rem;
+            overflow-x: auto;
+        }
+
+        .code-block code {
+            font-family: var(--font-mono);
+            font-size: 0.85rem;
+            line-height: 1.6;
+            color: #c9d1d9;
+        }
+
+        /* Syntax highlighting (manual) */
+        .kw { color: #ff7b72; }
+        .fn { color: #d2a8ff; }
+        .str { color: #a5d6ff; }
+        .cm { color: #8b949e; font-style: italic; }
+        .num { color: #79c0ff; }
+        .type { color: #ffa657; }
+        .dir { color: #ff7b72; }
+        .mac { color: #ffa657; }
+
+        /* ── Tables ── */
+        .table-wrap {
+            overflow-x: auto;
+            margin: 1.25rem 0;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+        }
+
+        th {
+            background: var(--bg-code);
+            color: var(--accent);
+            font-weight: 600;
+            text-align: left;
+            padding: 0.75rem 1rem;
+            border-bottom: 1px solid var(--border);
+            font-family: var(--font-display);
+            white-space: nowrap;
+        }
+
+        td {
+            padding: 0.6rem 1rem;
+            border-bottom: 1px solid var(--border);
+            color: var(--text-secondary);
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        tr:nth-child(even) td {
+            background: rgba(13, 17, 23, 0.5);
+        }
+
+        /* ── Diagrams ── */
+        .diagram-flow {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            margin: 1.5rem 0;
+            padding: 1.5rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+        }
+
+        .diagram-box {
+            font-family: var(--font-mono);
+            font-size: 0.85rem;
+            padding: 0.5rem 1rem;
+            background: var(--bg-code);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            color: var(--text-primary);
+            text-align: center;
+            white-space: nowrap;
+        }
+
+        .diagram-box.accent {
+            border-color: var(--accent);
+            color: var(--accent);
+            background: rgba(118, 185, 0, 0.08);
+        }
+
+        .diagram-box.dim {
+            color: var(--text-secondary);
+            border-color: var(--border);
+        }
+
+        .diagram-arrow {
+            color: var(--accent);
+            font-size: 1.3rem;
+            font-weight: 700;
+        }
+
+        /* Vertical flow diagrams */
+        .diagram-vertical {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.3rem;
+            margin: 1.5rem 0;
+            padding: 1.5rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+        }
+
+        .diagram-vertical .diagram-arrow {
+            font-size: 1.1rem;
+        }
+
+        /* Nested hierarchy diagram */
+        .hierarchy {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            margin: 1.5rem 0;
+            padding: 1.5rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+        }
+
+        .hierarchy-level {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .hierarchy-label {
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            min-width: 80px;
+            text-align: right;
+        }
+
+        .hierarchy-items {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.35rem;
+        }
+
+        .hierarchy-item {
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            padding: 0.3rem 0.6rem;
+            border-radius: 4px;
+            background: var(--bg-code);
+            border: 1px solid var(--border);
+            color: var(--text-secondary);
+        }
+
+        .hierarchy-item.accent {
+            border-color: var(--accent);
+            color: var(--accent);
+            background: rgba(118, 185, 0, 0.08);
+        }
+
+        /* Grid diagram */
+        .diagram-grid {
+            display: grid;
+            gap: 0.75rem;
+            margin: 1.5rem 0;
+            padding: 1.5rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+        }
+
+        .diagram-grid.cols-2 {
+            grid-template-columns: 1fr 1fr;
+        }
+
+        .diagram-grid.cols-3 {
+            grid-template-columns: 1fr 1fr 1fr;
+        }
+
+        .diagram-panel {
+            padding: 1rem;
+            background: var(--bg-code);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+        }
+
+        .diagram-panel.accent-border {
+            border-left: 3px solid var(--accent);
+        }
+
+        .diagram-panel h4 {
+            font-family: var(--font-display);
+            font-size: 1rem;
+            color: var(--accent);
+            margin-bottom: 0.5rem;
+        }
+
+        .diagram-panel p, .diagram-panel ul {
+            font-size: 0.85rem;
+        }
+
+        /* ── Callout Boxes ── */
+        .callout {
+            background: var(--bg-card);
+            border-left: 3px solid var(--accent);
+            border-radius: 0 8px 8px 0;
+            padding: 1rem 1.25rem;
+            margin: 1.25rem 0;
+        }
+
+        .callout p {
+            margin-bottom: 0;
+        }
+
+        .callout .callout-label {
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            color: var(--accent);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 0.3rem;
+        }
+
+        /* ── Tier Visual ── */
+        .tier-visual {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            margin: 1.5rem 0;
+            padding: 1.5rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+        }
+
+        .tier-bar {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .tier-label {
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            min-width: 90px;
+            text-align: right;
+        }
+
+        .tier-fill {
+            height: 32px;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            padding: 0 0.75rem;
+            font-family: var(--font-mono);
+            font-size: 0.7rem;
+            white-space: nowrap;
+            transition: width 0.6s ease;
+        }
+
+        .tier-cost {
+            font-family: var(--font-mono);
+            font-size: 0.7rem;
+            color: var(--text-secondary);
+            min-width: 70px;
+        }
+
+        /* ── Contents list ── */
+        .contents-list {
+            list-style: none;
+            padding-left: 0;
+            counter-reset: contents;
+        }
+
+        .contents-list li {
+            counter-increment: contents;
+            padding: 0.6rem 0;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .contents-list li:last-child {
+            border-bottom: none;
+        }
+
+        .contents-list li::before {
+            content: counter(contents, decimal-leading-zero);
+            font-family: var(--font-mono);
+            font-size: 0.85rem;
+            color: var(--accent);
+            min-width: 2rem;
+        }
+
+        .contents-list a {
+            color: var(--text-primary);
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .contents-list a:hover {
+            color: var(--accent);
+        }
+
+        /* ── Footer ── */
+        .footer {
+            text-align: center;
+            padding: 3rem 1.5rem;
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            border-top: 1px solid var(--border);
+            max-width: var(--max-width);
+            margin: 0 auto;
+        }
+
+        .footer a {
+            color: var(--accent);
+            text-decoration: none;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        /* ── Responsive ── */
+        @media (max-width: 640px) {
+            .slide {
+                padding: 3rem 1rem;
+                min-height: auto;
+            }
+
+            .slide-number {
+                font-size: 3rem;
+                top: 1.5rem;
+                right: 1rem;
+            }
+
+            .slide h2 {
+                font-size: 1.5rem;
+            }
+
+            .diagram-grid.cols-2,
+            .diagram-grid.cols-3 {
+                grid-template-columns: 1fr;
+            }
+
+            .pipeline {
+                gap: 0.15rem;
+            }
+
+            .pipeline-step {
+                font-size: 0.6rem;
+                padding: 0.2rem 0.4rem;
+            }
+
+            .hero h1 {
+                font-size: 1.8rem;
+            }
+
+            table {
+                font-size: 0.78rem;
+            }
+
+            .tier-label {
+                min-width: 60px;
+                font-size: 0.65rem;
+            }
+
+            .tier-fill {
+                font-size: 0.6rem;
+                height: 26px;
+            }
+        }
+
+        /* ── Interactive controls (added for Local LLM series) ── */
+        .control-panel {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1.25rem;
+            margin: 1.25rem 0;
+        }
+        .control-row {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 0.75rem;
+        }
+        .control-row label {
+            font-family: var(--font-mono);
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            min-width: 180px;
+        }
+        .control-row input[type="range"] {
+            flex: 1;
+            min-width: 160px;
+            accent-color: var(--accent);
+        }
+        .control-row input[type="number"],
+        .control-row select {
+            background: var(--bg-code);
+            border: 1px solid var(--border);
+            color: var(--text-primary);
+            border-radius: 4px;
+            padding: 0.3rem 0.5rem;
+            font-family: var(--font-mono);
+            font-size: 0.8rem;
+        }
+        .control-row .val {
+            font-family: var(--font-mono);
+            font-size: 0.85rem;
+            color: var(--accent);
+            min-width: 80px;
+            text-align: right;
+        }
+        .btn {
+            font-family: var(--font-mono);
+            font-size: 0.8rem;
+            padding: 0.4rem 0.9rem;
+            background: var(--accent-dim);
+            color: var(--accent);
+            border: 1px solid var(--accent);
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background 0.15s ease;
+        }
+        .btn:hover { background: rgba(118, 185, 0, 0.2); }
+        .btn:disabled { opacity: 0.4; cursor: not-allowed; }
+        .btn.secondary {
+            background: var(--bg-code);
+            color: var(--text-secondary);
+            border-color: var(--border);
+        }
+        .result-box {
+            background: var(--bg-code);
+            border: 1px solid var(--border);
+            border-left: 3px solid var(--accent);
+            border-radius: 4px;
+            padding: 0.75rem 1rem;
+            font-family: var(--font-mono);
+            font-size: 0.85rem;
+            color: var(--text-primary);
+            margin-top: 0.75rem;
+        }
+        .result-box .line-label { color: var(--text-secondary); }
+        .result-box .line-val   { color: var(--accent); font-weight: 600; }
+        .metric-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 0.5rem;
+            margin-top: 0.75rem;
+        }
+        .metric {
+            background: var(--bg-code);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 0.6rem 0.8rem;
+            text-align: center;
+        }
+        .metric .metric-label {
+            font-family: var(--font-mono);
+            font-size: 0.7rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+        }
+        .metric .metric-value {
+            font-family: var(--font-display);
+            font-size: 1.25rem;
+            color: var(--accent);
+            font-weight: 600;
+            margin-top: 0.2rem;
+        }
+
+        /* Canvas / SVG containers */
+        .canvas-wrap {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 1.25rem 0;
+            overflow-x: auto;
+        }
+        .canvas-wrap canvas,
+        .canvas-wrap svg {
+            display: block;
+            margin: 0 auto;
+            max-width: 100%;
+        }
+
+        /* Small inline badge */
+        .badge {
+            display: inline-block;
+            font-family: var(--font-mono);
+            font-size: 0.65rem;
+            padding: 0.1rem 0.45rem;
+            border-radius: 999px;
+            border: 1px solid var(--border);
+            color: var(--text-secondary);
+            vertical-align: middle;
+            margin-left: 0.3rem;
+        }
+        .badge.ok    { border-color: var(--accent); color: var(--accent); background: var(--accent-dim); }
+        .badge.warn  { border-color: #ffa657; color: #ffa657; background: rgba(255,166,87,0.08); }
+        .badge.bad   { border-color: #ff7b72; color: #ff7b72; background: rgba(255,123,114,0.08); }
+
+    </style>
+</head>
+<body>
+
+<header class="hero">
+    <div class="series-label">NVIDIA GPU Architectures Series — Presentation 11</div>
+    <h1><span class="accent">DGX, HGX, MGX</span> &mdash; NVIDIA's Datacenter Reference Platforms</h1>
+    <p class="subtitle">Behind every frontier model is a reference platform. Walk through DGX (turnkey systems), HGX (8-GPU baseboards used by every OEM), MGX (modular reference for custom servers), OAM (industry standard), and the SuperPOD/BasePOD cluster blueprints &mdash; and learn what each actually is, who builds it, and what's inside.</p>
+
+    <div class="tags">
+        <span class="tag">DGX</span><span class="tag">HGX</span><span class="tag">MGX</span>
+        <span class="tag">OAM</span><span class="tag">SuperPOD</span><span class="tag">BasePOD</span>
+        <span class="tag">DGX Cloud</span><span class="tag">OEMs</span>
+        <span class="tag">NVL72</span><span class="tag">Reference Architecture</span>
+    </div>
+
+    <div class="pipeline">
+        <span class="pipeline-step">GPU</span>
+        <span class="pipeline-arrow">&rarr;</span>
+        <span class="pipeline-step">HGX baseboard</span>
+        <span class="pipeline-arrow">&rarr;</span>
+        <span class="pipeline-step">DGX/OEM</span>
+        <span class="pipeline-arrow">&rarr;</span>
+        <span class="pipeline-step">BasePOD</span>
+        <span class="pipeline-arrow">&rarr;</span>
+        <span class="pipeline-step">SuperPOD</span>
+        <span class="pipeline-arrow">&rarr;</span>
+        <span class="pipeline-step">NVL72</span>
+        <span class="pipeline-arrow">&rarr;</span>
+        <span class="pipeline-step">Cloud</span>
+    </div>
+</header>
+
+<!-- ════════════════════════════════════ Slide 00 ════════════════════════════════════ -->
+<section class="slide" id="slide-00">
+    <div class="slide-number">00</div>
+    <h2>Topics We'll Cover</h2>
+    <p>NVIDIA does not just sell chips. It publishes a whole stack of reference platforms &mdash; from GPU module up to fully wired clusters &mdash; and OEMs and hyperscalers build everything around those references. This deck disentangles the names so you know exactly what you are buying.</p>
+    <ul class="contents-list">
+        <li><a href="#slide-01">The Reference-Platform Pyramid</a></li>
+        <li><a href="#slide-02">SXM, PCIe and OAM Modules</a></li>
+        <li><a href="#slide-03">HGX &mdash; The 8-GPU Baseboard</a></li>
+        <li><a href="#slide-04">DGX &mdash; NVIDIA's Reference Server</a></li>
+        <li><a href="#slide-05">MGX &mdash; Modular Reference Architecture</a></li>
+        <li><a href="#slide-06">GB200 NVL72 &mdash; The Rack Is the Computer</a></li>
+        <li><a href="#slide-07">BasePOD &mdash; The Smaller Cluster Reference</a></li>
+        <li><a href="#slide-08">SuperPOD &mdash; Hyperscale Cluster Blueprint</a></li>
+        <li><a href="#slide-09">DGX Cloud, DGX Spark &mdash; Same Stack, New Form Factors</a></li>
+        <li><a href="#slide-10">OEM Ecosystem &mdash; Who Actually Builds These</a></li>
+        <li><a href="#slide-11">Interactive: Pick Your Platform</a></li>
+    </ul>
+</section>
+
+<!-- ════════════════════════════════════ Slide 01 ════════════════════════════════════ -->
+<section class="slide" id="slide-01">
+    <div class="slide-number">01</div>
+    <h2>The Reference-Platform Pyramid</h2>
+    <p>The same six layers appear in every NVIDIA datacenter generation. NVIDIA designs everything from <strong>chip up to rack reference</strong>; OEMs (Supermicro, Dell, Lenovo, HPE, Foxconn, Wiwynn) integrate one or more of those layers into a product you can actually purchase.</p>
+
+    <div class="canvas-wrap">
+        <svg viewBox="0 0 720 440" width="720" height="440" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+                <linearGradient id="pyr" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stop-color="#76B900" stop-opacity="0.25"/>
+                    <stop offset="100%" stop-color="#76B900" stop-opacity="0.05"/>
+                </linearGradient>
+            </defs>
+            <!-- Pyramid layers, narrowest at top -->
+            <polygon points="320,30 400,30 460,80 260,80" fill="url(#pyr)" stroke="#76B900"/>
+            <text x="360" y="60" fill="#e6edf3" font-family="JetBrains Mono" font-size="13" text-anchor="middle">Cluster &mdash; SuperPOD</text>
+
+            <polygon points="260,82 460,82 510,140 210,140" fill="url(#pyr)" stroke="#76B900"/>
+            <text x="360" y="118" fill="#e6edf3" font-family="JetBrains Mono" font-size="13" text-anchor="middle">Rack &mdash; NVL72 / BasePOD rack</text>
+
+            <polygon points="210,142 510,142 560,200 160,200" fill="url(#pyr)" stroke="#76B900"/>
+            <text x="360" y="178" fill="#e6edf3" font-family="JetBrains Mono" font-size="13" text-anchor="middle">System &mdash; DGX / OEM server</text>
+
+            <polygon points="160,202 560,202 610,260 110,260" fill="url(#pyr)" stroke="#76B900"/>
+            <text x="360" y="238" fill="#e6edf3" font-family="JetBrains Mono" font-size="13" text-anchor="middle">Baseboard &mdash; HGX (8 GPUs + 4 NVSwitches)</text>
+
+            <polygon points="110,262 610,262 660,320 60,320" fill="url(#pyr)" stroke="#76B900"/>
+            <text x="360" y="298" fill="#e6edf3" font-family="JetBrains Mono" font-size="13" text-anchor="middle">Module &mdash; SXM / PCIe / OAM / MGX socket</text>
+
+            <polygon points="60,322 660,322 720,400 0,400" fill="url(#pyr)" stroke="#76B900"/>
+            <text x="360" y="365" fill="#e6edf3" font-family="JetBrains Mono" font-size="14" text-anchor="middle">Chip &mdash; H100 / H200 / B100 / B200 / GB200 / GB10</text>
+
+            <!-- Side labels -->
+            <text x="690" y="60" fill="#8b949e" font-family="JetBrains Mono" font-size="10" text-anchor="end">100s&ndash;1000s GPUs</text>
+            <text x="690" y="118" fill="#8b949e" font-family="JetBrains Mono" font-size="10" text-anchor="end">8&ndash;72 GPUs</text>
+            <text x="690" y="178" fill="#8b949e" font-family="JetBrains Mono" font-size="10" text-anchor="end">1&ndash;8 GPUs/box</text>
+            <text x="690" y="238" fill="#8b949e" font-family="JetBrains Mono" font-size="10" text-anchor="end">8 GPUs + fabric</text>
+            <text x="690" y="298" fill="#8b949e" font-family="JetBrains Mono" font-size="10" text-anchor="end">1 GPU package</text>
+            <text x="690" y="360" fill="#8b949e" font-family="JetBrains Mono" font-size="10" text-anchor="end">Silicon die</text>
+        </svg>
+    </div>
+
+    <div class="diagram-grid cols-2">
+        <div class="diagram-panel accent-border">
+            <h4>NVIDIA designs</h4>
+            <p>Chip, module, HGX baseboard, NVSwitch tray, NVL72 rack, BasePOD/SuperPOD reference architecture, networking (Quantum-2 IB, Spectrum-X Ethernet), management software stack (Base Command, NVIDIA AI Enterprise).</p>
+        </div>
+        <div class="diagram-panel accent-border">
+            <h4>OEMs integrate</h4>
+            <p>Chassis, PSU, cooling loop, BMC firmware, cabling and serviceability. Some (Supermicro/Dell) build full SuperPOD-class systems. Others (Foxconn/Wiwynn) build hyperscale white-box for the cloud providers under their own SKUs.</p>
+        </div>
+    </div>
+
+    <div class="callout">
+        <div class="callout-label">Key idea</div>
+        <p>"DGX", "HGX" and "MGX" are not three product lines for the same thing &mdash; they live at <em>different levels</em> of the pyramid. HGX is a baseboard. DGX is a fully assembled NVIDIA system that <em>contains</em> an HGX. MGX is a modular reference at the system level that competes with DGX as a starting point for OEMs.</p>
+    </div>
+</section>
+
+<!-- ════════════════════════════════════ Slide 02 ════════════════════════════════════ -->
+<section class="slide" id="slide-02">
+    <div class="slide-number">02</div>
+    <h2>SXM, PCIe and OAM Modules</h2>
+    <p>Before you ever see "HGX" or "DGX", you need to know how a GPU is physically packaged. Datacenter GPUs come in three module form factors: NVIDIA's proprietary SXM, the standard PCIe add-in card, and the Open Compute Project's vendor-neutral OAM.</p>
+
+    <div class="diagram-grid cols-3">
+        <div class="diagram-panel accent-border">
+            <h4>SXM</h4>
+            <p><strong>NVIDIA-proprietary mezzanine.</strong> Bolts down to a baseboard via a custom socket (Mirror Mezzanine Connector). Carries full 18 NVLink lanes and high-current power rails. SXM5 (Hopper) lands an H100 at <strong>700 W</strong>; SXM6 (Blackwell) goes to <strong>1000 W</strong> per module on B200. Always the top SKU.</p>
+            <ul>
+                <li>NVLink-rich: 900 GB/s/GPU on H100, 1.8 TB/s on B200</li>
+                <li>Liquid- or air-cooled cold plate</li>
+                <li>Only sold as 8-pack on HGX baseboards</li>
+            </ul>
+        </div>
+        <div class="diagram-panel accent-border">
+            <h4>PCIe</h4>
+            <p><strong>Standard add-in card.</strong> Same chip, but limited to PCIe Gen5 x16 (~64 GB/s) for host I/O, with optional 2-card NVLink bridge (only between exactly two adjacent cards). 350&ndash;400 W typical (H100 PCIe is 350 W). Easy retrofit into existing servers.</p>
+            <ul>
+                <li>Drop-in for any PCIe x16 slot with auxiliary power</li>
+                <li>NVLink bridge gives 600 GB/s peer-only between 2 cards</li>
+                <li>Lower clocks/TDP than SXM equivalents</li>
+            </ul>
+        </div>
+        <div class="diagram-panel accent-border">
+            <h4>OAM</h4>
+            <p><strong>OCP Accelerator Module.</strong> Universal mezzanine spec from the Open Compute Project &mdash; same footprint accepted by AMD MI300X, Intel Gaudi 3 and (for some SKUs) NVIDIA. Hyperscalers love it because the chassis is interchangeable across vendors.</p>
+            <ul>
+                <li>Vendor-neutral pinout</li>
+                <li>Used by AMD/Intel for primary parts; NVIDIA prefers SXM</li>
+                <li>UBB (Universal Baseboard) sister spec defines the 8-OAM board</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="table-wrap">
+        <table>
+            <thead><tr><th>Module</th><th>Owner</th><th>Power envelope</th><th>Inter-GPU link</th><th>Where you see it</th></tr></thead>
+            <tbody>
+                <tr><td>SXM5 (H100/H200)</td><td>NVIDIA</td><td>700 W</td><td>NVLink 4 &mdash; 900 GB/s</td><td>HGX H100/H200, DGX H100/H200</td></tr>
+                <tr><td>SXM6 (B200)</td><td>NVIDIA</td><td>1000 W</td><td>NVLink 5 &mdash; 1.8 TB/s</td><td>HGX B200, DGX B200, GB200 NVL72</td></tr>
+                <tr><td>PCIe (H100/H200/L40S)</td><td>PCI-SIG</td><td>300&ndash;400 W</td><td>PCIe Gen5; optional NVLink bridge</td><td>OEM 1U/2U boxes, MGX builds</td></tr>
+                <tr><td>OAM 1.5/2.0</td><td>OCP</td><td>up to 1000 W</td><td>vendor-defined fabric on UBB</td><td>AMD MI300X, Intel Gaudi 3 systems</td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="callout">
+        <div class="callout-label">Density vs. flexibility</div>
+        <p>Datacenter customers prefer <strong>SXM/OAM for density</strong> &mdash; fewer cables, shared baseboard power, integrated NVLink/UBB fabric. They prefer <strong>PCIe for retrofit</strong> &mdash; you can drop one or two cards into a server you already own without redesigning the chassis. Mixing them in the same workload is rarely worth the firmware pain.</p>
+    </div>
+</section>
+
+<!-- ════════════════════════════════════ Slide 03 ════════════════════════════════════ -->
+<section class="slide" id="slide-03">
+    <div class="slide-number">03</div>
+    <h2>HGX &mdash; The 8-GPU Baseboard</h2>
+    <p>HGX is the single most-deployed building block in AI infrastructure today, and the most misunderstood. It is <strong>a baseboard, not a system</strong>. NVIDIA ships you a populated PCB the size of a pizza box; the OEM puts it in a chassis with PSUs, fans, NICs, and a host node, and sells you a server.</p>
+
+    <h3>What's on an HGX H100 baseboard</h3>
+    <ul>
+        <li><strong>8&times; H100 SXM5 GPUs</strong> &mdash; 80 GB HBM3 each, 700 W each, 5.6 kW for the GPUs alone</li>
+        <li><strong>4&times; NVSwitch 3 ASICs</strong> &mdash; build a non-blocking all-to-all NVLink fabric between the 8 GPUs</li>
+        <li><strong>NVLink full mesh</strong> &mdash; every GPU has 900 GB/s of bisection bandwidth into the switch fabric</li>
+        <li><strong>Power delivery</strong> &mdash; 12 V / 54 V VRMs sized for 8 SXM rails</li>
+        <li><strong>PCIe fanout</strong> &mdash; 8 Gen5 x16 host links, plus separate NIC slots for ConnectX/BlueField</li>
+        <li><strong>Cooling cold plates or air-cooling fins</strong> &mdash; depending on variant</li>
+    </ul>
+
+    <div class="canvas-wrap">
+        <svg viewBox="0 0 720 360" width="720" height="360" xmlns="http://www.w3.org/2000/svg">
+            <!-- baseboard outline -->
+            <rect x="20" y="20" width="680" height="320" rx="8" fill="#0d1117" stroke="#76B900"/>
+            <text x="360" y="42" fill="#76B900" font-family="JetBrains Mono" font-size="12" text-anchor="middle">HGX H100 baseboard (8&times; SXM5 + 4&times; NVSwitch)</text>
+
+            <!-- 8 GPUs in 2 rows of 4 -->
+            <g font-family="JetBrains Mono" font-size="11" text-anchor="middle">
+              <rect x="50"  y="70" width="120" height="90" rx="4" fill="#161b22" stroke="#76B900"/><text x="110" y="110" fill="#e6edf3">H100 #0</text><text x="110" y="130" fill="#8b949e" font-size="9">80 GB HBM3</text>
+              <rect x="180" y="70" width="120" height="90" rx="4" fill="#161b22" stroke="#76B900"/><text x="240" y="110" fill="#e6edf3">H100 #1</text><text x="240" y="130" fill="#8b949e" font-size="9">80 GB HBM3</text>
+              <rect x="420" y="70" width="120" height="90" rx="4" fill="#161b22" stroke="#76B900"/><text x="480" y="110" fill="#e6edf3">H100 #2</text><text x="480" y="130" fill="#8b949e" font-size="9">80 GB HBM3</text>
+              <rect x="550" y="70" width="120" height="90" rx="4" fill="#161b22" stroke="#76B900"/><text x="610" y="110" fill="#e6edf3">H100 #3</text><text x="610" y="130" fill="#8b949e" font-size="9">80 GB HBM3</text>
+
+              <rect x="50"  y="210" width="120" height="90" rx="4" fill="#161b22" stroke="#76B900"/><text x="110" y="250" fill="#e6edf3">H100 #4</text><text x="110" y="270" fill="#8b949e" font-size="9">80 GB HBM3</text>
+              <rect x="180" y="210" width="120" height="90" rx="4" fill="#161b22" stroke="#76B900"/><text x="240" y="250" fill="#e6edf3">H100 #5</text><text x="240" y="270" fill="#8b949e" font-size="9">80 GB HBM3</text>
+              <rect x="420" y="210" width="120" height="90" rx="4" fill="#161b22" stroke="#76B900"/><text x="480" y="250" fill="#e6edf3">H100 #6</text><text x="480" y="270" fill="#8b949e" font-size="9">80 GB HBM3</text>
+              <rect x="550" y="210" width="120" height="90" rx="4" fill="#161b22" stroke="#76B900"/><text x="610" y="250" fill="#e6edf3">H100 #7</text><text x="610" y="270" fill="#8b949e" font-size="9">80 GB HBM3</text>
+
+              <!-- 4 NVSwitches in middle column -->
+              <rect x="320" y="70"  width="80" height="40" rx="3" fill="#161b22" stroke="#ffa657"/><text x="360" y="95"  fill="#ffa657">NVSw 0</text>
+              <rect x="320" y="120" width="80" height="40" rx="3" fill="#161b22" stroke="#ffa657"/><text x="360" y="145" fill="#ffa657">NVSw 1</text>
+              <rect x="320" y="210" width="80" height="40" rx="3" fill="#161b22" stroke="#ffa657"/><text x="360" y="235" fill="#ffa657">NVSw 2</text>
+              <rect x="320" y="260" width="80" height="40" rx="3" fill="#161b22" stroke="#ffa657"/><text x="360" y="285" fill="#ffa657">NVSw 3</text>
+            </g>
+
+            <!-- subtle fabric lines -->
+            <g stroke="#76B90055" stroke-width="0.7" fill="none">
+                <line x1="170" y1="115" x2="320" y2="90"/>
+                <line x1="170" y1="115" x2="320" y2="140"/>
+                <line x1="300" y1="115" x2="320" y2="90"/>
+                <line x1="300" y1="115" x2="320" y2="140"/>
+                <line x1="420" y1="90" x2="540" y2="115"/>
+                <line x1="400" y1="140" x2="540" y2="115"/>
+                <line x1="170" y1="255" x2="320" y2="230"/>
+                <line x1="300" y1="255" x2="320" y2="280"/>
+                <line x1="400" y1="280" x2="540" y2="255"/>
+                <line x1="400" y1="230" x2="420" y2="255"/>
+            </g>
+        </svg>
+    </div>
+
+    <h3>HGX variants &mdash; same socket, different generations</h3>
+    <div class="table-wrap">
+        <table>
+            <thead><tr><th>HGX board</th><th>GPUs</th><th>HBM/GPU</th><th>NVLink BW/GPU</th><th>Total HBM</th><th>FP8 PFLOPS (dense)</th></tr></thead>
+            <tbody>
+                <tr><td>HGX A100</td><td>8&times; A100 SXM4</td><td>40 / 80 GB HBM2e</td><td>600 GB/s</td><td>320&ndash;640 GB</td><td>n/a (FP16: ~5)</td></tr>
+                <tr><td>HGX H100</td><td>8&times; H100 SXM5</td><td>80 GB HBM3</td><td>900 GB/s</td><td>640 GB</td><td>~32</td></tr>
+                <tr><td>HGX H200</td><td>8&times; H200 SXM5</td><td>141 GB HBM3e</td><td>900 GB/s</td><td>1.13 TB</td><td>~32</td></tr>
+                <tr><td>HGX B200</td><td>8&times; B200 SXM6</td><td>192 GB HBM3e</td><td>1.8 TB/s</td><td>1.54 TB</td><td>~72</td></tr>
+                <tr><td>HGX B300</td><td>8&times; B300 SXM6</td><td>288 GB HBM3e</td><td>1.8 TB/s</td><td>2.30 TB</td><td>~108</td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="callout">
+        <div class="callout-label">Why every OEM uses HGX</div>
+        <p>Designing 8 GPUs of NVLink fabric on a custom PCB is hard, expensive, and takes a year. By accepting HGX, the OEM inherits a validated electrical, thermal, and firmware design and only has to design the chassis around it. That is why a Supermicro HGX H200 box and a Dell PowerEdge XE9680 H200 box have radically different chassis but identical GPU performance.</p>
+    </div>
+</section>
+
+<!-- ════════════════════════════════════ Slide 04 ════════════════════════════════════ -->
+<section class="slide" id="slide-04">
+    <div class="slide-number">04</div>
+    <h2>DGX &mdash; NVIDIA's Reference Server</h2>
+    <p>DGX is the only complete, fully-assembled <strong>AI server sold by NVIDIA itself</strong>. Every other vendor's box uses HGX or MGX as a starting point. DGX is the "this is exactly what we intend, validated end-to-end" version, with NVIDIA-supplied firmware, NICs, DPUs, NVMe storage, and software stack.</p>
+
+    <h3>The DGX lineage</h3>
+    <div class="table-wrap">
+        <table>
+            <thead><tr><th>Year</th><th>System</th><th>GPUs</th><th>What was new</th></tr></thead>
+            <tbody>
+                <tr><td>2016</td><td>DGX-1</td><td>8&times; P100, then refreshed to 8&times; V100</td><td>First "deep learning supercomputer in a box"; hybrid cube-mesh NVLink</td></tr>
+                <tr><td>2018</td><td>DGX-2</td><td>16&times; V100</td><td>First NVSwitch (gen 1); single 16-GPU NVLink domain</td></tr>
+                <tr><td>2020</td><td>DGX A100</td><td>8&times; A100</td><td>Mellanox ConnectX-6, MIG, 5 PB/s aggregate memory bandwidth</td></tr>
+                <tr><td>2023</td><td>DGX H100</td><td>8&times; H100 SXM5</td><td>FP8 Transformer Engine, 4&times; NVSwitch 3, 900 GB/s/GPU</td></tr>
+                <tr><td>2024</td><td>DGX H200</td><td>8&times; H200 SXM5</td><td>HBM3e (1.13 TB total) for long-context inference</td></tr>
+                <tr><td>2024</td><td>DGX B200</td><td>8&times; B200 SXM6</td><td>Blackwell, 1.4 TB HBM3e, FP4 Transformer Engine v2</td></tr>
+                <tr><td>2024</td><td>DGX GB200 NVL72</td><td>72&times; B200 in 1 rack</td><td>Rack-scale NVLink domain (see slide 06)</td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <h3>What you actually get in a DGX H200</h3>
+    <ul>
+        <li><strong>HGX H200 baseboard</strong> &mdash; 8&times; H200 SXM5, 1.13 TB HBM3e</li>
+        <li><strong>2&times; Intel Xeon Platinum (8480+)</strong> &mdash; 112 cores total; 2 TB DDR5</li>
+        <li><strong>8&times; ConnectX-7 NICs</strong> at 400 Gbps NDR InfiniBand &mdash; one per GPU for direct GPU&harr;fabric</li>
+        <li><strong>2&times; BlueField-3 DPUs</strong> &mdash; storage and management offload</li>
+        <li><strong>30 TB NVMe</strong> in U.2 hot-swap bays for dataset cache</li>
+        <li><strong>10.2 kW power, 6U air-cooled</strong> &mdash; or rack-scale liquid for the GB200 NVL72 successor</li>
+        <li><strong>NVIDIA AI Enterprise</strong> + Base Command software, validated firmware, included support</li>
+    </ul>
+
+    <div class="callout">
+        <div class="callout-label">Why pay the DGX premium</div>
+        <p>List price of a DGX H200 is ~$300&ndash;400 k vs. ~$250&ndash;300 k for an OEM HGX H200 box with the same 8 GPUs. You're paying for: NVIDIA-validated firmware (no surprises with new CUDA), full software stack (Base Command, AI Enterprise), NVIDIA-direct support (you call NVIDIA, not your OEM), and bundled NICs/DPUs/NVMe. Hyperscalers usually pass; enterprises with no GPU operations team usually take it.</p>
+    </div>
+</section>
+
+<!-- ════════════════════════════════════ Slide 05 ════════════════════════════════════ -->
+<section class="slide" id="slide-05">
+    <div class="slide-number">05</div>
+    <h2>MGX &mdash; Modular Reference Architecture</h2>
+    <p>Announced at COMPUTEX 2023, MGX is NVIDIA's <strong>modular reference architecture</strong> for building datacenter, edge, AI training, AI inference, HPC and enterprise servers from a small set of common building blocks. Where HGX is one fixed 8-GPU baseboard, MGX is a <em>spec</em> &mdash; a socket-and-board standard with many valid configurations.</p>
+
+    <div class="diagram-grid cols-2">
+        <div class="diagram-panel accent-border">
+            <h4>What MGX standardises</h4>
+            <ul>
+                <li>Chassis dimensions (1U, 2U, 4U variants)</li>
+                <li>Power and cooling envelopes</li>
+                <li>CPU socket area &mdash; Grace ARM <em>or</em> x86 (Intel/AMD)</li>
+                <li>GPU module bays &mdash; SXM, PCIe, or MGX-socket Blackwell</li>
+                <li>NIC/DPU slots &mdash; ConnectX-7/8 or BlueField-3</li>
+                <li>NVLink-C2C and NVLink-Switch cabling between trays</li>
+            </ul>
+        </div>
+        <div class="diagram-panel accent-border">
+            <h4>Why OEMs adopt it</h4>
+            <ul>
+                <li><strong>Faster TTM</strong> &mdash; ~6 months to ship a new MGX system vs. ~18 months for a from-scratch design</li>
+                <li><strong>Multiple SKUs from one chassis</strong> &mdash; same box, swap CPU+GPU combos</li>
+                <li><strong>Validated thermal/power profiles</strong> &mdash; NVIDIA pre-tested the worst case</li>
+                <li><strong>Ecosystem accessory market</strong> &mdash; NICs, storage trays, cable harnesses are interchangeable</li>
+            </ul>
+        </div>
+    </div>
+
+    <h3>MGX flavours &mdash; the same chassis ships as many SKUs</h3>
+    <div class="table-wrap">
+        <table>
+            <thead><tr><th>Workload</th><th>CPU</th><th>GPU</th><th>Networking</th><th>Typical OEM SKU</th></tr></thead>
+            <tbody>
+                <tr><td>AI training</td><td>2&times; Xeon / EPYC</td><td>HGX H200 / B200</td><td>8&times; CX-7 NDR</td><td>Supermicro SYS-A21GE-NBRT</td></tr>
+                <tr><td>AI inference</td><td>1&times; Grace 72-core</td><td>4&times; L40S or 1&times; B200</td><td>2&times; CX-7 / BF-3</td><td>QCT MGX-AI</td></tr>
+                <tr><td>Data analytics</td><td>2&times; EPYC</td><td>2&times; H100 PCIe</td><td>2&times; CX-7</td><td>GIGABYTE G593-SD0</td></tr>
+                <tr><td>Edge / 5G</td><td>1&times; Grace 72-core</td><td>2&times; L4 / L40S</td><td>BF-3 + 100 GbE</td><td>ASRock Rack 1U2N4G-Genoa</td></tr>
+                <tr><td>HPC sim</td><td>2&times; Grace ARM (GH200)</td><td>built-in Hopper</td><td>NDR + Slingshot</td><td>HPE Cray Supercomputing EX</td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="callout">
+        <div class="callout-label">DGX vs. HGX vs. MGX in one line</div>
+        <p><strong>DGX</strong> = NVIDIA-built turnkey server. <strong>HGX</strong> = NVIDIA's fixed 8-GPU baseboard for OEM training boxes. <strong>MGX</strong> = NVIDIA's flexible chassis spec from which OEMs build many SKUs (training, inference, edge, enterprise).</p>
+    </div>
+</section>
+
+<!-- ════════════════════════════════════ Slide 06 ════════════════════════════════════ -->
+<section class="slide" id="slide-06">
+    <div class="slide-number">06</div>
+    <h2>GB200 NVL72 &mdash; The Rack Is the Computer</h2>
+    <p>NVL72 is the most aggressive integration NVIDIA has ever shipped: a single 19-inch rack containing <strong>72 Blackwell GPUs in one NVLink domain</strong>. Designed for trillion-parameter MoE training and inference at densities no air-cooled box can reach.</p>
+
+    <div class="canvas-wrap">
+        <svg viewBox="0 0 720 460" width="720" height="460" xmlns="http://www.w3.org/2000/svg">
+            <!-- rack outline -->
+            <rect x="20" y="20" width="280" height="420" rx="6" fill="#0d1117" stroke="#76B900"/>
+            <text x="160" y="42" fill="#76B900" font-family="JetBrains Mono" font-size="12" text-anchor="middle">GB200 NVL72 rack</text>
+
+            <!-- 18 compute trays + 9 NVL switch trays interleaved -->
+            <g font-family="JetBrains Mono" font-size="9" text-anchor="middle">
+                <!-- compute trays in pairs separated by switch trays -->
+                <!-- repeat 9 times: 2 compute trays + 1 switch tray -->
+                <!-- compute = green, switch = orange -->
+                <!-- y from 50 -->
+                <rect x="40" y="50"  width="240" height="20" fill="#76B90033" stroke="#76B900"/><text x="160" y="64" fill="#e6edf3">Compute tray (1&times; Grace + 2&times; B200)</text>
+                <rect x="40" y="72"  width="240" height="20" fill="#76B90033" stroke="#76B900"/><text x="160" y="86" fill="#e6edf3">Compute tray</text>
+                <rect x="40" y="94"  width="240" height="14" fill="#ffa65733" stroke="#ffa657"/><text x="160" y="105" fill="#ffa657">NVSwitch tray</text>
+
+                <rect x="40" y="112" width="240" height="20" fill="#76B90033" stroke="#76B900"/><text x="160" y="126" fill="#e6edf3">Compute tray</text>
+                <rect x="40" y="134" width="240" height="20" fill="#76B90033" stroke="#76B900"/><text x="160" y="148" fill="#e6edf3">Compute tray</text>
+                <rect x="40" y="156" width="240" height="14" fill="#ffa65733" stroke="#ffa657"/><text x="160" y="167" fill="#ffa657">NVSwitch tray</text>
+
+                <rect x="40" y="174" width="240" height="20" fill="#76B90033" stroke="#76B900"/><text x="160" y="188" fill="#e6edf3">Compute tray</text>
+                <rect x="40" y="196" width="240" height="20" fill="#76B90033" stroke="#76B900"/><text x="160" y="210" fill="#e6edf3">Compute tray</text>
+                <rect x="40" y="218" width="240" height="14" fill="#ffa65733" stroke="#ffa657"/><text x="160" y="229" fill="#ffa657">NVSwitch tray</text>
+
+                <rect x="40" y="236" width="240" height="20" fill="#76B90033" stroke="#76B900"/><text x="160" y="250" fill="#e6edf3">Compute tray</text>
+                <rect x="40" y="258" width="240" height="20" fill="#76B90033" stroke="#76B900"/><text x="160" y="272" fill="#e6edf3">Compute tray</text>
+                <rect x="40" y="280" width="240" height="14" fill="#ffa65733" stroke="#ffa657"/><text x="160" y="291" fill="#ffa657">NVSwitch tray</text>
+
+                <rect x="40" y="298" width="240" height="20" fill="#76B90033" stroke="#76B900"/><text x="160" y="312" fill="#e6edf3">Compute tray</text>
+                <rect x="40" y="320" width="240" height="20" fill="#76B90033" stroke="#76B900"/><text x="160" y="334" fill="#e6edf3">Compute tray</text>
+                <rect x="40" y="342" width="240" height="14" fill="#ffa65733" stroke="#ffa657"/><text x="160" y="353" fill="#ffa657">NVSwitch tray</text>
+
+                <rect x="40" y="360" width="240" height="20" fill="#76B90033" stroke="#76B900"/><text x="160" y="374" fill="#e6edf3">Compute tray</text>
+                <rect x="40" y="382" width="240" height="20" fill="#76B90033" stroke="#76B900"/><text x="160" y="396" fill="#e6edf3">Compute tray</text>
+                <rect x="40" y="404" width="240" height="14" fill="#ffa65733" stroke="#ffa657"/><text x="160" y="415" fill="#ffa657">NVSwitch tray</text>
+            </g>
+
+            <!-- right-side annotations -->
+            <g font-family="JetBrains Mono" font-size="11" fill="#e6edf3">
+                <text x="340" y="60">18&times; compute trays</text>
+                <text x="340" y="80" fill="#8b949e" font-size="10">each: 1&times; Grace + 2&times; B200</text>
+                <text x="340" y="100" fill="#8b949e" font-size="10">total: 36 Grace + 72 B200</text>
+
+                <text x="340" y="140">9&times; NVLink-Switch trays</text>
+                <text x="340" y="160" fill="#8b949e" font-size="10">each: 2&times; NVSwitch 4 ASIC</text>
+                <text x="340" y="180" fill="#8b949e" font-size="10">100% non-blocking 72-way mesh</text>
+
+                <text x="340" y="220">Rack totals</text>
+                <text x="340" y="240" fill="#8b949e" font-size="10">13.5 TB unified HBM3e</text>
+                <text x="340" y="260" fill="#8b949e" font-size="10">130 TB/s aggregate NVLink</text>
+                <text x="340" y="280" fill="#8b949e" font-size="10">~720 PFLOPS FP8 / 1.4 EFLOPS FP4</text>
+                <text x="340" y="300" fill="#8b949e" font-size="10">~120 kW per rack, liquid cooled</text>
+
+                <text x="340" y="340">External</text>
+                <text x="340" y="360" fill="#8b949e" font-size="10">InfiniBand spine to other NVL72s</text>
+                <text x="340" y="380" fill="#8b949e" font-size="10">8&times; CX-7 / NIC per tray for IB</text>
+            </g>
+        </svg>
+    </div>
+
+    <div class="diagram-grid cols-2">
+        <div class="diagram-panel accent-border">
+            <h4>Why one NVLink domain matters</h4>
+            <p>72 GPUs that share one NVLink domain look to software like one big GPU with 13.5 TB of unified HBM. Tensor parallel and expert parallel collectives stay on NVLink (1.8 TB/s each direction) instead of stepping down to InfiniBand (50 GB/s). For a trillion-parameter MoE this is the difference between profitable and pointless.</p>
+        </div>
+        <div class="diagram-panel accent-border">
+            <h4>Why liquid cooling</h4>
+            <p>72&times; B200 at 1000 W is 72 kW just for GPUs; with Grace, NICs, switches, and PSU losses you reach ~120 kW per rack. Air cooling caps out near ~40 kW/rack in most datacenters, so direct-to-chip warm-water liquid (typically ~32&deg;C inlet) is mandatory. NVIDIA publishes manifold and CDU references; OEMs build the loop.</p>
+        </div>
+    </div>
+</section>
+
+<!-- ════════════════════════════════════ Slide 07 ════════════════════════════════════ -->
+<section class="slide" id="slide-07">
+    <div class="slide-number">07</div>
+    <h2>BasePOD &mdash; The Smaller Cluster Reference</h2>
+    <p>BasePOD is NVIDIA's reference architecture for the <strong>2&ndash;32 node enterprise cluster</strong>: pre-validated topology, storage, and software, with a small enough footprint that a single corporate datacenter can host it. Think of it as "DGX SuperPOD lite" for non-hyperscalers.</p>
+
+    <h3>The reference shipping list</h3>
+    <ul>
+        <li><strong>2&ndash;32 DGX nodes</strong> (or HGX OEM equivalents) &mdash; H100, H200, or B200</li>
+        <li><strong>Quantum-2 NDR InfiniBand fabric</strong> &mdash; 400 Gbps non-blocking, fat-tree topology</li>
+        <li><strong>Spectrum-X Ethernet</strong> &mdash; in-band management and storage frontend</li>
+        <li><strong>Storage tier</strong> &mdash; NVIDIA-certified parallel filesystem from DDN (EXAScaler), VAST, WekaIO, or Pure Storage AIRI</li>
+        <li><strong>Base Command Manager</strong> &mdash; cluster lifecycle, job scheduling, monitoring</li>
+        <li><strong>NVIDIA AI Enterprise</strong> &mdash; CUDA, Triton, NIMs, Riva, etc., with enterprise support</li>
+    </ul>
+
+    <div class="diagram-grid cols-2">
+        <div class="diagram-panel accent-border">
+            <h4>Use cases</h4>
+            <ul>
+                <li>Enterprise AI labs (banks, pharma, energy) needing DGX-grade reliability without SuperPOD scale</li>
+                <li>University faculty clusters</li>
+                <li>Sovereign-AI proof-of-concepts before scaling to full SuperPOD</li>
+                <li>Pre-production environments mirroring SuperPOD topology at smaller scale</li>
+            </ul>
+        </div>
+        <div class="diagram-panel accent-border">
+            <h4>Sizing rule of thumb</h4>
+            <ul>
+                <li>4 nodes (32 GPUs) &mdash; team of ~50 ML engineers, fine-tuning and serving</li>
+                <li>8 nodes (64 GPUs) &mdash; small frontier-model post-training</li>
+                <li>16 nodes (128 GPUs) &mdash; production-grade training of mid-scale models (~30B)</li>
+                <li>32 nodes (256 GPUs) &mdash; the inflection point: above this, jump to SuperPOD</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="callout">
+        <div class="callout-label">BasePOD vs. random clusters</div>
+        <p>You can absolutely buy 8 DGX nodes and wire them up yourself with arbitrary IB switches and storage. BasePOD just pre-answers all the design questions (cabling diagrams, switch firmware, NCCL tuning, MOFED versions, storage QoS) so the cluster works on day one and NVIDIA support won't blame your topology when a job hangs.</p>
+    </div>
+</section>
+
+<!-- ════════════════════════════════════ Slide 08 ════════════════════════════════════ -->
+<section class="slide" id="slide-08">
+    <div class="slide-number">08</div>
+    <h2>SuperPOD &mdash; Hyperscale Cluster Blueprint</h2>
+    <p>SuperPOD is NVIDIA's reference for clusters of <strong>32 nodes and up</strong>, with a published "scalable unit" (SU) design that can be tiled to thousands of GPUs. This is the architecture behind Meta, Microsoft, OpenAI, Anthropic, xAI, and the major sovereign-AI builds.</p>
+
+    <h3>Generational layouts</h3>
+    <div class="table-wrap">
+        <table>
+            <thead><tr><th>Generation</th><th>Node</th><th>SU size</th><th>Max SUs / SuperPOD</th><th>GPU count</th></tr></thead>
+            <tbody>
+                <tr><td>SuperPOD A100</td><td>DGX A100 (8 GPU)</td><td>20 nodes (160 GPUs)</td><td>7</td><td>up to 1120 A100</td></tr>
+                <tr><td>SuperPOD H100</td><td>DGX H100 (8 GPU)</td><td>32 nodes (256 GPUs)</td><td>4</td><td>up to 1024 H100</td></tr>
+                <tr><td>SuperPOD H200</td><td>DGX H200 (8 GPU)</td><td>32 nodes (256 GPUs)</td><td>4</td><td>up to 1024 H200</td></tr>
+                <tr><td>SuperPOD GB200</td><td>GB200 NVL72 rack (72 GPU)</td><td>8 racks (576 GPUs)</td><td>4</td><td>up to 2304 B200</td></tr>
+                <tr><td>SuperPOD GB300</td><td>GB300 NVL72 rack (72 GPU)</td><td>8 racks (576 GPUs)</td><td>up to 8</td><td>up to 4608 B300</td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <h3>What makes a SuperPOD a SuperPOD (and not just "lots of GPUs")</h3>
+    <ul>
+        <li><strong>Full fat-tree InfiniBand</strong> &mdash; non-blocking bisection at every level; no oversubscription anywhere on the compute fabric</li>
+        <li><strong>Storage tier sized to ingest</strong> &mdash; ~1&ndash;5 PB of all-flash NVMe parallel FS (DDN/VAST/WekaIO), engineered to feed every GPU at >2 GB/s sustained</li>
+        <li><strong>Separate management Ethernet</strong> &mdash; never share a fabric between RDMA training traffic and BMC/PXE</li>
+        <li><strong>Base Command + DCGM + NetQ</strong> &mdash; cluster orchestrator, GPU telemetry, fabric telemetry</li>
+        <li><strong>Reference-validated NCCL tuning</strong> &mdash; published topology files mean collectives reach 90%+ peak on day one</li>
+        <li><strong>Power and cooling sized for the worst case</strong> &mdash; not nameplate, but real all-reduce torture-test draw</li>
+    </ul>
+
+    <div class="callout">
+        <div class="callout-label">Why customers still use the reference</div>
+        <p>You could redesign every aspect of a SuperPOD &mdash; pick your own switches, your own storage, your own scheduler. Hyperscalers do this all the time. But for everyone else, the reference saves 12&ndash;18 months of engineering, ships with NVIDIA support, and matches the configuration their published benchmarks were measured on. That last point matters: if your cluster doesn't look like the reference, "this MoE should train in N hours" stops being a useful prediction.</p>
+    </div>
+</section>
+
+<!-- ════════════════════════════════════ Slide 09 ════════════════════════════════════ -->
+<section class="slide" id="slide-09">
+    <div class="slide-number">09</div>
+    <h2>DGX Cloud, DGX Spark &mdash; Same Stack, New Form Factors</h2>
+    <p>NVIDIA has wrapped the DGX brand around two adjacent products that are not boxes you buy and rack: a <strong>cloud-native DGX-as-a-service</strong>, and a <strong>desk-side DGX Spark</strong>. Both share the same CUDA software stack as a real DGX SuperPOD &mdash; the value proposition is "develop here, run there".</p>
+
+    <div class="diagram-grid cols-2">
+        <div class="diagram-panel accent-border">
+            <h4>DGX Cloud</h4>
+            <p>Bare-metal access to NVIDIA-validated DGX clusters, hosted in <strong>OCI, Azure, GCP and (separately) AWS</strong>. NVIDIA designs the cluster to SuperPOD spec, the cloud provider operates the datacenter, the customer pays NVIDIA for time on the cluster.</p>
+            <ul>
+                <li>Multi-node training with NVLink-rich H100/H200/B200 nodes</li>
+                <li>Bring your own model and data; NVIDIA provides Base Command, AI Enterprise, NeMo</li>
+                <li>Marketed at frontier-model startups and Fortune-500 AI teams that need elastic training capacity</li>
+                <li>Differs from generic cloud GPU instances: dedicated nodes, RDMA fabric, validated software</li>
+            </ul>
+        </div>
+        <div class="diagram-panel accent-border">
+            <h4>DGX Spark <span class="badge ok">on desks now</span></h4>
+            <p>The personal AI workstation announced as <em>Project DIGITS</em> in early 2025 and shipping under the DGX Spark name. <strong>1&times; Grace + 1&times; Blackwell</strong> on a single GB10 superchip, <strong>128 GB unified LPDDR5x</strong>, ~1 PFLOPS at FP4, ~$3&ndash;5 k.</p>
+            <ul>
+                <li>Bridges hobbyist and enterprise stack &mdash; identical CUDA/Triton/NeMo software as DGX H200</li>
+                <li>Holds 70B-class FP8 models or 200B-class FP4 models in unified memory</li>
+                <li>Not a training workstation: bandwidth is LPDDR5x not HBM, ~273 GB/s aggregate</li>
+                <li>Two units chained over ConnectX provide 256 GB unified for 200B-class models at home</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="callout">
+        <div class="callout-label">The continuum</div>
+        <p>The point of DGX Spark is not raw FLOPS &mdash; an RTX 6000 Ada beats it on dense compute &mdash; but <strong>memory capacity</strong> and <strong>identical software stack</strong>. Develop a NeMo training script on a Spark, scale it 1:1 onto a DGX Cloud H200 cluster, ship the resulting model to a customer running DGX B200 on-prem. Same CUDA, same NCCL, same Base Command, same PyTorch &mdash; just bigger numbers.</p>
+    </div>
+</section>
+
+<!-- ════════════════════════════════════ Slide 10 ════════════════════════════════════ -->
+<section class="slide" id="slide-10">
+    <div class="slide-number">10</div>
+    <h2>OEM Ecosystem &mdash; Who Actually Builds These</h2>
+    <p>NVIDIA does not ship enough DGX boxes to feed the market. The vast majority of HGX baseboards go to a handful of OEMs and ODMs who build chassis around them. Here's who ships what in 2026.</p>
+
+    <div class="table-wrap">
+        <table>
+            <thead><tr><th>Vendor</th><th>What they ship</th><th>Position</th></tr></thead>
+            <tbody>
+                <tr><td>Supermicro</td><td>HGX H200 / B200 systems (SYS-A21GE), MGX builds across many SKUs, GB200 NVL72 racks</td><td>Highest volume Tier-1; aggressive on time-to-market</td></tr>
+                <tr><td>Dell</td><td>PowerEdge XE9680 (HGX H100/H200), XE9712 (GB200 NVL72)</td><td>Enterprise sales channel; bundled with PowerScale storage</td></tr>
+                <tr><td>Lenovo</td><td>ThinkSystem SR685a V3 (HGX H200/B200), SR780a V3 (GB200 NVL72)</td><td>Strong in EMEA enterprise and HPC</td></tr>
+                <tr><td>HPE</td><td>Cray EX with H100/H200 for supercomputers, ProLiant XD685 (HGX), Compute XD (GB200)</td><td>HPC heritage, exascale system builds</td></tr>
+                <tr><td>Foxconn</td><td>Hyperscale HGX/MGX white-box for cloud providers under their own SKUs</td><td>ODM; not retail-facing, but largest unit shipper</td></tr>
+                <tr><td>Wiwynn</td><td>Hyperscale HGX/MGX white-box (Meta, Microsoft)</td><td>ODM; deep relationships with hyperscale buyers</td></tr>
+                <tr><td>GIGABYTE</td><td>G593 series (HGX H200/B200), MGX-based AI inference SKUs</td><td>Mid-tier, price-aggressive</td></tr>
+                <tr><td>ASUS</td><td>ESC N8/N16 (HGX), MGX-based AI training and inference servers</td><td>Mid-tier OEM, strong APAC presence</td></tr>
+                <tr><td>ASRock Rack</td><td>MGX 1U/2U inference and edge SKUs, mid-tier HGX</td><td>Niche price-aggressive builder</td></tr>
+                <tr><td>QCT (Quanta)</td><td>MGX-based AI inference, edge, and analytics SKUs; ODM hyperscale</td><td>Cross-over: own brand + ODM contracts</td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <h3>The pricing flow</h3>
+    <div class="canvas-wrap">
+        <svg viewBox="0 0 720 200" width="720" height="200" xmlns="http://www.w3.org/2000/svg">
+            <g font-family="JetBrains Mono" font-size="11" text-anchor="middle">
+                <rect x="20"  y="60" width="140" height="80" rx="6" fill="#0d1117" stroke="#76B900"/>
+                <text x="90" y="95" fill="#76B900">NVIDIA</text>
+                <text x="90" y="115" fill="#8b949e" font-size="9">designs &amp; sells</text>
+                <text x="90" y="128" fill="#8b949e" font-size="9">GPUs / HGX / MGX spec</text>
+
+                <rect x="200" y="60" width="140" height="80" rx="6" fill="#0d1117" stroke="#76B900"/>
+                <text x="270" y="95" fill="#76B900">OEM / ODM</text>
+                <text x="270" y="115" fill="#8b949e" font-size="9">chassis, PSU, cooling,</text>
+                <text x="270" y="128" fill="#8b949e" font-size="9">BMC, validation</text>
+
+                <rect x="380" y="60" width="140" height="80" rx="6" fill="#0d1117" stroke="#76B900"/>
+                <text x="450" y="95" fill="#76B900">Distributor / SI</text>
+                <text x="450" y="115" fill="#8b949e" font-size="9">deployment, finance,</text>
+                <text x="450" y="128" fill="#8b949e" font-size="9">support contracts</text>
+
+                <rect x="560" y="60" width="140" height="80" rx="6" fill="#0d1117" stroke="#76B900"/>
+                <text x="630" y="95" fill="#76B900">Customer</text>
+                <text x="630" y="115" fill="#8b949e" font-size="9">enterprise, hyperscaler,</text>
+                <text x="630" y="128" fill="#8b949e" font-size="9">sovereign AI</text>
+
+                <text x="180" y="105" fill="#76B900" font-size="18">&rarr;</text>
+                <text x="360" y="105" fill="#76B900" font-size="18">&rarr;</text>
+                <text x="540" y="105" fill="#76B900" font-size="18">&rarr;</text>
+
+                <text x="90"  y="170" fill="#8b949e" font-size="10">$ to NVIDIA</text>
+                <text x="270" y="170" fill="#8b949e" font-size="10">+ OEM margin</text>
+                <text x="450" y="170" fill="#8b949e" font-size="10">+ SI margin / svcs</text>
+                <text x="630" y="170" fill="#8b949e" font-size="10">final price</text>
+            </g>
+        </svg>
+    </div>
+
+    <div class="callout">
+        <div class="callout-label">Where the margin actually lives</div>
+        <p>NVIDIA captures the vast majority of system value via GPU and HGX board pricing &mdash; gross margins above 75% on the silicon. The OEM adds a single-digit-to-low-teens margin for chassis, integration, validation and support. The SI / VAR layer adds another 5&ndash;15% for deployment and ongoing services. A "$400 k DGX-class" system is approximately $300 k of NVIDIA content, $50&ndash;70 k of OEM content, and the rest in services and support contracts.</p>
+    </div>
+</section>
+
+<!-- ════════════════════════════════════ Slide 11 ════════════════════════════════════ -->
+<section class="slide" id="slide-11">
+    <div class="slide-number">11</div>
+    <h2>Interactive: Pick Your Platform</h2>
+    <p>Pick a workload, GPU class, and node count. The picker recommends the most appropriate NVIDIA reference platform, sums aggregate VRAM and FP8 PFLOPS, sizes the NVLink domain, and gives a rough $/node figure to anchor expectations.</p>
+
+    <div class="control-panel">
+        <div class="control-row">
+            <label for="pp-workload">Workload</label>
+            <select id="pp-workload">
+                <option value="pretrain">Pretrain frontier model (&gt;100B)</option>
+                <option value="finetune">Fine-tune mid model (7&ndash;70B)</option>
+                <option value="inference70">Production inference (70B)</option>
+                <option value="edge">Edge inference</option>
+                <option value="lab">Research lab / dev cluster</option>
+            </select>
+        </div>
+        <div class="control-row">
+            <label for="pp-gpu">GPU class</label>
+            <select id="pp-gpu">
+                <option value="H100">H100 (80 GB HBM3)</option>
+                <option value="H200">H200 (141 GB HBM3e)</option>
+                <option value="B100">B100 (192 GB HBM3e)</option>
+                <option value="B200">B200 (192 GB HBM3e)</option>
+                <option value="GB200">GB200 NVL72 (rack)</option>
+                <option value="L40S">L40S (48 GB GDDR6)</option>
+                <option value="RTX6000">RTX 6000 Ada (48 GB GDDR6)</option>
+                <option value="Spark">DGX Spark (128 GB unified)</option>
+            </select>
+        </div>
+        <div class="control-row">
+            <label for="pp-nodes">Node count</label>
+            <select id="pp-nodes">
+                <option value="1">1 node</option>
+                <option value="4">4 nodes</option>
+                <option value="16" selected>16 nodes</option>
+                <option value="64">64 nodes</option>
+                <option value="256">256 nodes</option>
+            </select>
+        </div>
+        <div class="control-row">
+            <button class="btn" id="pp-go">Compute</button>
+            <button class="btn secondary" id="pp-reset">Reset</button>
+        </div>
+
+        <div class="metric-grid" id="pp-metrics">
+            <div class="metric"><div class="metric-label">Platform</div><div class="metric-value" id="m-platform">&mdash;</div></div>
+            <div class="metric"><div class="metric-label">Aggregate VRAM</div><div class="metric-value" id="m-vram">&mdash;</div></div>
+            <div class="metric"><div class="metric-label">Aggregate FP8</div><div class="metric-value" id="m-pflops">&mdash;</div></div>
+            <div class="metric"><div class="metric-label">NVLink domain</div><div class="metric-value" id="m-nvl">&mdash;</div></div>
+            <div class="metric"><div class="metric-label">$ / node</div><div class="metric-value" id="m-cost">&mdash;</div></div>
+            <div class="metric"><div class="metric-label">Notes</div><div class="metric-value" id="m-notes">&mdash;</div></div>
+        </div>
+
+        <div class="result-box" id="pp-verdict">
+            <span class="line-label">Verdict:</span> <span class="line-val">Choose options above and press Compute.</span>
+        </div>
+    </div>
+
+    <div class="callout">
+        <div class="callout-label">How to read the recommendation</div>
+        <p>The picker is opinionated: pretraining frontier models always points at GB200 NVL72; production 70B inference points at HGX OEM boxes; edge inference points at L40S- or Spark-class kit. The aggregate FP8 PFLOPS and VRAM are theoretical peaks &mdash; expect 50&ndash;70% sustained on real workloads. The $/node is mid-2026 list-equivalent, not your discounted contract price.</p>
+    </div>
+</section>
+
+<!-- ════════════════════════════════════ Footer ════════════════════════════════════ -->
+<footer class="footer">
+    <p>Part of the <a href="https://github.com/BrendanJamesLynskey/LLMs#nvidia-gpu-architectures">NVIDIA GPU Architectures Series</a></p>
+    <p style="margin-top: 0.5rem; font-size: 0.8rem;"><a href="https://github.com/BrendanJamesLynskey/LLMs#nvidia-gpu-architectures">Back to Series Index</a></p>
+</footer>
+
+<script>
+    // Smooth scroll for TOC links
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+            e.preventDefault();
+            const target = document.querySelector(this.getAttribute('href'));
+            if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        });
+    });
+
+    // Subtle fade-in on scroll
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.style.opacity = '1';
+                entry.target.style.transform = 'translateY(0)';
+            }
+        });
+    }, { threshold: 0.1 });
+    document.querySelectorAll('.slide').forEach(slide => {
+        slide.style.opacity = '0';
+        slide.style.transform = 'translateY(30px)';
+        slide.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+        observer.observe(slide);
+    });
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // Platform picker (slide 11)
+    // ═══════════════════════════════════════════════════════════════════════════
+
+    // GPU spec table: per-GPU VRAM (GB), FP8 dense PFLOPS (per GPU),
+    // GPUs/node for the platform that hosts this GPU class, NVLink domain size,
+    // typical $/node USD, and feature flags
+    const GPU_SPECS = {
+        H100:    { vram: 80,  fp8: 4.0,  gpuPerNode: 8,  nvlDomain: 8,   costNode: 280000, ib: true,  mig: true,  liquid: false, label: 'H100 SXM5' },
+        H200:    { vram: 141, fp8: 4.0,  gpuPerNode: 8,  nvlDomain: 8,   costNode: 320000, ib: true,  mig: true,  liquid: false, label: 'H200 SXM5' },
+        B100:    { vram: 192, fp8: 7.0,  gpuPerNode: 8,  nvlDomain: 8,   costNode: 380000, ib: true,  mig: true,  liquid: false, label: 'B100 SXM6' },
+        B200:    { vram: 192, fp8: 9.0,  gpuPerNode: 8,  nvlDomain: 8,   costNode: 450000, ib: true,  mig: true,  liquid: true,  label: 'B200 SXM6' },
+        GB200:   { vram: 192, fp8: 10.0, gpuPerNode: 72, nvlDomain: 72,  costNode: 3200000, ib: true,  mig: true,  liquid: true,  label: 'GB200 NVL72 rack' },
+        L40S:    { vram: 48,  fp8: 1.5,  gpuPerNode: 4,  nvlDomain: 1,   costNode: 60000,  ib: false, mig: false, liquid: false, label: 'L40S Ada' },
+        RTX6000: { vram: 48,  fp8: 1.5,  gpuPerNode: 2,  nvlDomain: 1,   costNode: 18000,  ib: false, mig: false, liquid: false, label: 'RTX 6000 Ada' },
+        Spark:   { vram: 128, fp8: 1.0,  gpuPerNode: 1,  nvlDomain: 1,   costNode: 4000,   ib: false, mig: false, liquid: false, label: 'DGX Spark GB10' }
+    };
+
+    // Workload-driven platform recommendation
+    function recommendPlatform(workload, gpu, nodes) {
+        const s = GPU_SPECS[gpu];
+        // Pretraining frontier model
+        if (workload === 'pretrain') {
+            if (gpu === 'GB200') return { name: 'GB200 SuperPOD', verdict: 'Right tool for the job. Each rack = 1 NVLink domain of 72 B200; tile 4&ndash;8 racks per scalable unit and stripe with InfiniBand for the spine.' };
+            if (gpu === 'B200' || gpu === 'B100') return { name: 'DGX B200 SuperPOD', verdict: 'Frontier-class with HGX B200 nodes. NVLink stops at 8 GPUs/node; consider GB200 NVL72 for tighter tensor-parallel.' };
+            if (gpu === 'H200' || gpu === 'H100') return { name: 'DGX H200 SuperPOD', verdict: 'Workable for sub-trillion-parameter pretraining. Above ~70B you will feel the 8-GPU NVLink ceiling.' };
+            return { name: 'Wrong class', verdict: 'This GPU class cannot pretrain a frontier model regardless of node count. Use B200 or GB200 NVL72.' };
+        }
+        // Fine-tune mid model
+        if (workload === 'finetune') {
+            if (gpu === 'GB200') return { name: 'GB200 NVL72 (overkill)', verdict: 'You only need a few NVL72 racks &mdash; or rent them on DGX Cloud. Mid-model fine-tune fits in one rack with room to spare.' };
+            if (gpu === 'B200' || gpu === 'B100' || gpu === 'H200' || gpu === 'H100') return { name: nodes <= 4 ? 'BasePOD ' + s.label : 'DGX SuperPOD ' + s.label, verdict: 'Sweet spot &mdash; 8-GPU HGX nodes with NVLink-rich tensor parallel and IB across nodes. ' + (nodes <= 4 ? 'BasePOD reference is enough.' : 'SuperPOD scale recommended.') };
+            if (gpu === 'L40S' || gpu === 'RTX6000') return { name: 'OEM MGX cluster', verdict: 'Will work for QLoRA / parameter-efficient fine-tuning. Full-fine-tune of 70B is not realistic on these.' };
+            if (gpu === 'Spark') return { name: 'DGX Spark cluster', verdict: 'OK for tiny LoRA work; serious mid-model fine-tune wants HBM bandwidth.' };
+        }
+        // Production inference 70B
+        if (workload === 'inference70') {
+            if (gpu === 'GB200') return { name: 'GB200 NVL72 (per-rack tenant)', verdict: 'Dramatically over-provisioned per request, but ideal if you serve many concurrent users and want hugely batched throughput.' };
+            if (gpu === 'B200' || gpu === 'H200') return { name: 'HGX OEM 8-GPU node', verdict: 'TP=8 fits a 70B at FP8 with KV cache headroom. One node per replica, scale horizontally.' };
+            if (gpu === 'B100' || gpu === 'H100') return { name: 'HGX OEM 8-GPU node', verdict: 'TP=8 at FP8 fits 70B with tighter context window. Good unit economics.' };
+            if (gpu === 'L40S') return { name: 'L40S MGX inference fleet', verdict: 'Cheapest $/tok for 70B-class FP8 if you are happy without NVLink across cards. Use TP=4 inside box, replica per box.' };
+            if (gpu === 'RTX6000') return { name: 'Workstation inference', verdict: 'Possible at FP8/INT4 with 2 cards over NVLink bridge; not a datacenter answer.' };
+            if (gpu === 'Spark') return { name: 'DGX Spark single tenant', verdict: '70B fits at FP8/FP4 in unified memory but throughput is single-user-class.' };
+        }
+        // Edge inference
+        if (workload === 'edge') {
+            if (gpu === 'L40S' || gpu === 'RTX6000' || gpu === 'Spark') return { name: 'MGX edge / Spark', verdict: 'Right footprint, low power, no IB needed. Spark for desk-side, L40S for telco/edge cabinet.' };
+            return { name: 'Wrong tier for edge', verdict: 'Datacenter SXM GPUs do not fit edge thermal/power envelopes. Use L40S or DGX Spark.' };
+        }
+        // Research lab
+        if (workload === 'lab') {
+            if (gpu === 'Spark') return { name: 'DGX Spark cluster', verdict: 'Affordable lab kit; same CUDA stack as DGX SuperPOD. One unit per researcher.' };
+            if (gpu === 'RTX6000' || gpu === 'L40S') return { name: 'OEM MGX dev cluster', verdict: 'Solid mid-tier dev environment with NVIDIA AI Enterprise; no IB needed.' };
+            if (nodes <= 8) return { name: 'BasePOD ' + s.label, verdict: 'Pre-validated DGX-grade reliability without SuperPOD complexity. Right size for an enterprise AI lab.' };
+            return { name: 'DGX SuperPOD ' + s.label, verdict: 'Scale fits a SuperPOD with one or more SUs.' };
+        }
+        return { name: 'TBD', verdict: 'No recommendation.' };
+    }
+
+    function fmtNum(n) {
+        if (n >= 1e12) return (n / 1e12).toFixed(2) + ' T';
+        if (n >= 1e9)  return (n / 1e9).toFixed(2)  + ' B';
+        if (n >= 1e6)  return (n / 1e6).toFixed(2)  + ' M';
+        if (n >= 1e3)  return (n / 1e3).toFixed(1)  + ' k';
+        return n.toString();
+    }
+    function fmtTB(gb) {
+        if (gb >= 1024) return (gb / 1024).toFixed(2) + ' TB';
+        return gb.toFixed(0) + ' GB';
+    }
+    function fmtUSD(n) {
+        if (n >= 1e9) return '$' + (n / 1e9).toFixed(2) + ' B';
+        if (n >= 1e6) return '$' + (n / 1e6).toFixed(1) + ' M';
+        if (n >= 1e3) return '$' + (n / 1e3).toFixed(0) + ' k';
+        return '$' + n;
+    }
+
+    function ppCompute() {
+        const workload = document.getElementById('pp-workload').value;
+        const gpu = document.getElementById('pp-gpu').value;
+        const nodes = parseInt(document.getElementById('pp-nodes').value, 10);
+        const s = GPU_SPECS[gpu];
+
+        const totalGPUs = s.gpuPerNode * nodes;
+        const totalVram = s.vram * totalGPUs; // GB
+        const totalPF = s.fp8 * totalGPUs; // PFLOPS
+        const totalCost = s.costNode * nodes;
+        const rec = recommendPlatform(workload, gpu, nodes);
+
+        document.getElementById('m-platform').textContent = rec.name;
+        document.getElementById('m-vram').textContent = fmtTB(totalVram);
+        document.getElementById('m-pflops').textContent = totalPF.toFixed(0) + ' PF';
+        document.getElementById('m-nvl').textContent = s.nvlDomain + ' GPU' + (s.nvlDomain > 1 ? 's' : '');
+        document.getElementById('m-cost').textContent = fmtUSD(s.costNode);
+
+        const flags = [];
+        flags.push((s.ib    ? '<span class="badge ok">IB</span>' : '<span class="badge bad">no IB</span>'));
+        flags.push((s.mig   ? '<span class="badge ok">MIG</span>' : '<span class="badge bad">no MIG</span>'));
+        flags.push((s.liquid? '<span class="badge warn">liquid</span>' : '<span class="badge ok">air</span>'));
+        document.getElementById('m-notes').innerHTML = flags.join(' ');
+
+        const verdict = document.getElementById('pp-verdict');
+        verdict.innerHTML =
+            '<span class="line-label">Platform:</span> <span class="line-val">' + rec.name + '</span><br>' +
+            '<span class="line-label">Verdict:</span> ' + rec.verdict + '<br>' +
+            '<span class="line-label">Total system list-equivalent:</span> <span class="line-val">' + fmtUSD(totalCost) + '</span> across ' + nodes + ' node' + (nodes > 1 ? 's' : '') + ' &mdash; ' + totalGPUs + ' GPUs.';
+    }
+
+    function ppReset() {
+        document.getElementById('pp-workload').value = 'pretrain';
+        document.getElementById('pp-gpu').value = 'H100';
+        document.getElementById('pp-nodes').value = '16';
+        ppCompute();
+    }
+
+    document.getElementById('pp-go').addEventListener('click', ppCompute);
+    document.getElementById('pp-reset').addEventListener('click', ppReset);
+    // Run once on load
+    ppCompute();
+</script>
+
+</body>
+</html>
