@@ -1010,10 +1010,10 @@
             <tbody>
                 <tr><td>2016</td><td>DGX-1</td><td>8&times; P100, then refreshed to 8&times; V100</td><td>First "deep learning supercomputer in a box"; hybrid cube-mesh NVLink</td></tr>
                 <tr><td>2018</td><td>DGX-2</td><td>16&times; V100</td><td>First NVSwitch (gen 1); single 16-GPU NVLink domain</td></tr>
-                <tr><td>2020</td><td>DGX A100</td><td>8&times; A100</td><td>Mellanox ConnectX-6, MIG, 5 PB/s aggregate memory bandwidth</td></tr>
-                <tr><td>2023</td><td>DGX H100</td><td>8&times; H100 SXM5</td><td>FP8 Transformer Engine, 4&times; NVSwitch 3, 900 GB/s/GPU</td></tr>
+                <tr><td>2020</td><td>DGX A100</td><td>8&times; A100</td><td>Mellanox ConnectX-6, MIG, 5 petaFLOPS AI performance, 6&times; NVSwitch 2</td></tr>
+                <tr><td>2022</td><td>DGX H100</td><td>8&times; H100 SXM5</td><td>FP8 Transformer Engine, 4&times; NVSwitch 3, 900 GB/s/GPU</td></tr>
                 <tr><td>2024</td><td>DGX H200</td><td>8&times; H200 SXM5</td><td>HBM3e (1.13 TB total) for long-context inference</td></tr>
-                <tr><td>2024</td><td>DGX B200</td><td>8&times; B200 SXM6</td><td>Blackwell, 1.4 TB HBM3e, FP4 Transformer Engine v2</td></tr>
+                <tr><td>2024</td><td>DGX B200</td><td>8&times; B200 SXM6</td><td>Blackwell, 1.54 TB HBM3e, FP4 Transformer Engine v2 (MX-FP4 + NVFP4)</td></tr>
                 <tr><td>2024</td><td>DGX GB200 NVL72</td><td>72&times; B200 in 1 rack</td><td>Rack-scale NVLink domain (see slide 06)</td></tr>
             </tbody>
         </table>
@@ -1139,7 +1139,7 @@
                 <text x="340" y="180" fill="#8b949e" font-size="10">100% non-blocking 72-way mesh</text>
 
                 <text x="340" y="220">Rack totals</text>
-                <text x="340" y="240" fill="#8b949e" font-size="10">13.5 TB unified HBM3e</text>
+                <text x="340" y="240" fill="#8b949e" font-size="10">13.8 TB unified HBM3e (72&times;192 GB)</text>
                 <text x="340" y="260" fill="#8b949e" font-size="10">130 TB/s aggregate NVLink</text>
                 <text x="340" y="280" fill="#8b949e" font-size="10">~720 PFLOPS FP8 / 1.4 EFLOPS FP4</text>
                 <text x="340" y="300" fill="#8b949e" font-size="10">~120 kW per rack, liquid cooled</text>
@@ -1154,7 +1154,7 @@
     <div class="diagram-grid cols-2">
         <div class="diagram-panel accent-border">
             <h4>Why one NVLink domain matters</h4>
-            <p>72 GPUs that share one NVLink domain look to software like one big GPU with 13.5 TB of unified HBM. Tensor parallel and expert parallel collectives stay on NVLink (1.8 TB/s each direction) instead of stepping down to InfiniBand (50 GB/s). For a trillion-parameter MoE this is the difference between profitable and pointless.</p>
+            <p>72 GPUs that share one NVLink domain look to software like one big GPU with 13.8 TB of unified HBM. Tensor parallel and expert parallel collectives stay on NVLink (1.8 TB/s each direction) instead of stepping down to InfiniBand (50 GB/s). For a trillion-parameter MoE this is the difference between profitable and pointless.</p>
         </div>
         <div class="diagram-panel accent-border">
             <h4>Why liquid cooling</h4>
