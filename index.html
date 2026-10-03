@@ -982,11 +982,11 @@
         <table>
             <thead><tr><th>HGX board</th><th>GPUs</th><th>HBM/GPU</th><th>NVLink BW/GPU</th><th>Total HBM</th><th>FP8 PFLOPS (dense)</th></tr></thead>
             <tbody>
-                <tr><td>HGX A100</td><td>8&times; A100 SXM4</td><td>40 / 80 GB HBM2e</td><td>600 GB/s</td><td>320&ndash;640 GB</td><td>n/a (FP16: ~5)</td></tr>
-                <tr><td>HGX H100</td><td>8&times; H100 SXM5</td><td>80 GB HBM3</td><td>900 GB/s</td><td>640 GB</td><td>~32</td></tr>
-                <tr><td>HGX H200</td><td>8&times; H200 SXM5</td><td>141 GB HBM3e</td><td>900 GB/s</td><td>1.13 TB</td><td>~32</td></tr>
-                <tr><td>HGX B200</td><td>8&times; B200 SXM6</td><td>192 GB HBM3e</td><td>1.8 TB/s</td><td>1.54 TB</td><td>~72</td></tr>
-                <tr><td>HGX B300</td><td>8&times; B300 SXM6</td><td>288 GB HBM3e</td><td>1.8 TB/s</td><td>2.30 TB</td><td>~108</td></tr>
+                <tr><td>HGX A100</td><td>8&times; A100 SXM4</td><td>40 GB HBM2 / 80 GB HBM2e</td><td>600 GB/s</td><td>320&ndash;640 GB</td><td>n/a (FP16: ~2.5)</td></tr>
+                <tr><td>HGX H100</td><td>8&times; H100 SXM5</td><td>80 GB HBM3</td><td>900 GB/s</td><td>640 GB</td><td>~16</td></tr>
+                <tr><td>HGX H200</td><td>8&times; H200 SXM5</td><td>141 GB HBM3e</td><td>900 GB/s</td><td>1.13 TB</td><td>~16</td></tr>
+                <tr><td>HGX B200</td><td>8&times; B200 SXM6</td><td>192 GB HBM3e</td><td>1.8 TB/s</td><td>1.54 TB</td><td>~36</td></tr>
+                <tr><td>HGX B300</td><td>8&times; B300 SXM6</td><td>288 GB HBM3e</td><td>1.8 TB/s</td><td>2.30 TB</td><td>~36</td></tr>
             </tbody>
         </table>
     </div>
@@ -1103,7 +1103,7 @@
                 <!-- repeat 9 times: 2 compute trays + 1 switch tray -->
                 <!-- compute = green, switch = orange -->
                 <!-- y from 50 -->
-                <rect x="40" y="50"  width="240" height="20" fill="#b8b31533" stroke="#b8b315"/><text x="160" y="64" fill="#edede7">Compute tray (1&times; Grace + 2&times; B200)</text>
+                <rect x="40" y="50"  width="240" height="20" fill="#b8b31533" stroke="#b8b315"/><text x="160" y="64" fill="#edede7">Compute tray (2&times; Grace + 4&times; B200)</text>
                 <rect x="40" y="72"  width="240" height="20" fill="#b8b31533" stroke="#b8b315"/><text x="160" y="86" fill="#edede7">Compute tray</text>
                 <rect x="40" y="94"  width="240" height="14" fill="#e0b17233" stroke="#e0b172"/><text x="160" y="105" fill="#e0b172">NVSwitch tray</text>
 
@@ -1131,7 +1131,7 @@
             <!-- right-side annotations -->
             <g font-family="Roboto Mono" font-size="11" fill="#edede7">
                 <text x="340" y="60">18&times; compute trays</text>
-                <text x="340" y="80" fill="#9b9b95" font-size="10">each: 1&times; Grace + 2&times; B200</text>
+                <text x="340" y="80" fill="#9b9b95" font-size="10">each: 2&times; Grace + 4&times; B200</text>
                 <text x="340" y="100" fill="#9b9b95" font-size="10">total: 36 Grace + 72 B200</text>
 
                 <text x="340" y="140">9&times; NVLink-Switch trays</text>
@@ -1139,9 +1139,9 @@
                 <text x="340" y="180" fill="#9b9b95" font-size="10">100% non-blocking 72-way mesh</text>
 
                 <text x="340" y="220">Rack totals</text>
-                <text x="340" y="240" fill="#9b9b95" font-size="10">13.8 TB unified HBM3e (72&times;192 GB)</text>
+                <text x="340" y="240" fill="#9b9b95" font-size="10">13.4 TB unified HBM3e (72&times;186 GB)</text>
                 <text x="340" y="260" fill="#9b9b95" font-size="10">130 TB/s aggregate NVLink</text>
-                <text x="340" y="280" fill="#9b9b95" font-size="10">~720 PFLOPS FP8 / 1.4 EFLOPS FP4</text>
+                <text x="340" y="280" fill="#9b9b95" font-size="10">~720 PFLOPS FP8 / 1.4 EFLOPS FP4 (sparse)</text>
                 <text x="340" y="300" fill="#9b9b95" font-size="10">~120 kW per rack, liquid cooled</text>
 
                 <text x="340" y="340">External</text>
@@ -1154,7 +1154,7 @@
     <div class="diagram-grid cols-2">
         <div class="diagram-panel accent-border">
             <h4>Why one NVLink domain matters</h4>
-            <p>72 GPUs that share one NVLink domain look to software like one big GPU with 13.8 TB of unified HBM. Tensor parallel and expert parallel collectives stay on NVLink (1.8 TB/s each direction) instead of stepping down to InfiniBand (50 GB/s). For a trillion-parameter MoE this is the difference between profitable and pointless.</p>
+            <p>72 GPUs that share one NVLink domain look to software like one big GPU with 13.4 TB of unified HBM. Tensor parallel and expert parallel collectives stay on NVLink (1.8 TB/s per GPU, 900 GB/s each direction) instead of stepping down to InfiniBand (50 GB/s). For a trillion-parameter MoE this is the difference between profitable and pointless.</p>
         </div>
         <div class="diagram-panel accent-border">
             <h4>Why liquid cooling</h4>
@@ -1404,7 +1404,7 @@
 
     <div class="callout">
         <div class="callout-label">How to read the recommendation</div>
-        <p>The picker is opinionated: pretraining frontier models always points at GB200 NVL72; production 70B inference points at HGX OEM boxes; edge inference points at L40S- or Spark-class kit. The aggregate FP8 PFLOPS and VRAM are theoretical peaks &mdash; expect 50&ndash;70% sustained on real workloads. The $/node is mid-2026 list-equivalent, not your discounted contract price.</p>
+        <p>The picker is opinionated: pretraining frontier models always points at GB200 NVL72; production 70B inference points at HGX OEM boxes; edge inference points at L40S- or Spark-class kit. The aggregate FP8 PFLOPS (sparse, as NVIDIA quotes them) and VRAM are theoretical peaks &mdash; expect 50&ndash;70% sustained on real workloads. The $/node is mid-2026 list-equivalent, not your discounted contract price.</p>
     </div>
 </section>
 
@@ -1455,7 +1455,7 @@
         GB200:   { vram: 192, fp8: 10.0, gpuPerNode: 72, nvlDomain: 72,  costNode: 3200000, ib: true,  mig: true,  liquid: true,  label: 'GB200 NVL72 rack' },
         L40S:    { vram: 48,  fp8: 1.5,  gpuPerNode: 4,  nvlDomain: 1,   costNode: 60000,  ib: false, mig: false, liquid: false, label: 'L40S Ada' },
         RTX6000: { vram: 48,  fp8: 1.5,  gpuPerNode: 2,  nvlDomain: 1,   costNode: 18000,  ib: false, mig: false, liquid: false, label: 'RTX 6000 Ada' },
-        Spark:   { vram: 128, fp8: 1.0,  gpuPerNode: 1,  nvlDomain: 1,   costNode: 4000,   ib: false, mig: false, liquid: false, label: 'DGX Spark GB10' }
+        Spark:   { vram: 128, fp8: 0.5,  gpuPerNode: 1,  nvlDomain: 1,   costNode: 4000,   ib: false, mig: false, liquid: false, label: 'DGX Spark GB10' }
     };
 
     // Workload-driven platform recommendation
