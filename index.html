@@ -987,8 +987,8 @@
                 <tr><td>HGX A100</td><td>8&times; A100 SXM4</td><td>40 GB HBM2 / 80 GB HBM2e</td><td>600 GB/s</td><td>320&ndash;640 GB</td><td>n/a (FP16: ~2.5)</td></tr>
                 <tr><td>HGX H100</td><td>8&times; H100 SXM5</td><td>80 GB HBM3</td><td>900 GB/s</td><td>640 GB</td><td>~16</td></tr>
                 <tr><td>HGX H200</td><td>8&times; H200 SXM5</td><td>141 GB HBM3e</td><td>900 GB/s</td><td>1.13 TB</td><td>~16</td></tr>
-                <tr><td>HGX B200</td><td>8&times; B200 SXM6</td><td>192 GB HBM3e</td><td>1.8 TB/s</td><td>1.54 TB</td><td>~36</td></tr>
-                <tr><td>HGX B300</td><td>8&times; B300 SXM6</td><td>288 GB HBM3e</td><td>1.8 TB/s</td><td>2.30 TB</td><td>~36</td></tr>
+                <tr><td>HGX B200</td><td>8&times; B200 SXM6</td><td>180 GB HBM3e</td><td>1.8 TB/s</td><td>1.44 TB</td><td>~36</td></tr>
+                <tr><td>HGX B300</td><td>8&times; B300 SXM6</td><td>~262 GB HBM3e (2.1 TB &divide; 8)</td><td>1.8 TB/s</td><td>2.1 TB</td><td>~36</td></tr>
             </tbody>
         </table>
     </div>
@@ -1015,7 +1015,7 @@
                 <tr><td>2020</td><td>DGX A100</td><td>8&times; A100</td><td>Mellanox ConnectX-6, MIG, 5 petaFLOPS AI performance, 6&times; NVSwitch 2</td></tr>
                 <tr><td>2022</td><td>DGX H100</td><td>8&times; H100 SXM5</td><td>FP8 Transformer Engine, 4&times; NVSwitch 3, 900 GB/s/GPU</td></tr>
                 <tr><td>2024</td><td>DGX H200</td><td>8&times; H200 SXM5</td><td>HBM3e (1.13 TB total) for long-context inference</td></tr>
-                <tr><td>2024</td><td>DGX B200</td><td>8&times; B200 SXM6</td><td>Blackwell, 1.54 TB HBM3e, FP4 Transformer Engine v2 (MX-FP4 + NVFP4)</td></tr>
+                <tr><td>2024</td><td>DGX B200</td><td>8&times; B200 SXM6</td><td>Blackwell, 1,440 GB HBM3e, FP4 Transformer Engine v2 (MX-FP4 + NVFP4)</td></tr>
                 <tr><td>2024</td><td>DGX GB200 NVL72</td><td>72&times; B200 in 1 rack</td><td>Rack-scale NVLink domain (see slide 06)</td></tr>
             </tbody>
         </table>
@@ -1148,7 +1148,7 @@
 
                 <text x="340" y="340">External</text>
                 <text x="340" y="360" fill="#9b9b95" font-size="10">InfiniBand spine to other NVL72s</text>
-                <text x="340" y="380" fill="#9b9b95" font-size="10">8&times; CX-7 / NIC per tray for IB</text>
+                <text x="340" y="380" fill="#9b9b95" font-size="10">4&times; CX-7 per tray (1 per GPU)</text>
             </g>
         </svg>
     </div>
@@ -1160,8 +1160,13 @@
         </div>
         <div class="diagram-panel accent-border">
             <h4>Why liquid cooling</h4>
-            <p>72&times; B200 at 1000 W is 72 kW just for GPUs; with Grace, NICs, switches, and PSU losses you reach ~120 kW per rack. Air cooling caps out near ~40 kW/rack in most datacenters, so direct-to-chip warm-water liquid (typically ~32&deg;C inlet) is mandatory. NVIDIA publishes manifold and CDU references; OEMs build the loop.</p>
+            <p>72 Blackwell GPUs at up to 1,200 W each (Blackwell's maximum TGP) is up to 86 kW just for GPUs; with Grace, NICs, switches, and PSU losses NVIDIA quotes ~120 kW per rack. NVIDIA's own comparison is that data centres once ran at 20 kW per rack, so direct-to-chip warm-water liquid is mandatory. NVIDIA publishes manifold and CDU references; OEMs build the loop.</p>
         </div>
+    </div>
+
+    <div class="callout">
+        <div class="callout-label">Animated companion</div>
+        <p>The rack's power shelves, busbar and power smoothing: AI Racks Explained, <a href="https://ai-racks-explained.vercel.app/learn/06-power" style="color: var(--accent);">chapter 6, power</a>; its coolant loop, sized from Q = m&#775;c<sub>p</sub>&Delta;T: <a href="https://ai-racks-explained.vercel.app/learn/07-cooling" style="color: var(--accent);">chapter 7, cooling</a>; the ladder from one GPU to a hall of these racks: <a href="https://ai-racks-explained.vercel.app/learn/01-chip-to-data-centre" style="color: var(--accent);">chapter 1, from chip to data centre</a>; disaggregated serving on one rack: <a href="https://ai-racks-explained.vercel.app/learn/08-disaggregated-inference" style="color: var(--accent);">chapter 8, disaggregated inference on a rack</a>.</p>
     </div>
 </section>
 
@@ -1212,7 +1217,7 @@
 <section class="slide" id="slide-08">
     <div class="slide-number">08</div>
     <h2>SuperPOD &mdash; Hyperscale Cluster Blueprint</h2>
-    <p>SuperPOD is NVIDIA's reference for clusters of <strong>32 nodes and up</strong>, with a published "scalable unit" (SU) design that can be tiled to thousands of GPUs. This is the architecture behind Meta, Microsoft, OpenAI, Anthropic, xAI, and the major sovereign-AI builds.</p>
+    <p>SuperPOD is NVIDIA's reference for clusters of <strong>32 nodes and up</strong>, with a published "scalable unit" (SU) design that can be tiled to thousands of GPUs. It is the template many large AI clusters start from, even when their builders change the details.</p>
 
     <h3>Generational layouts</h3>
     <div class="table-wrap">
@@ -1220,10 +1225,10 @@
             <thead><tr><th>Generation</th><th>Node</th><th>SU size</th><th>Max SUs / SuperPOD</th><th>GPU count</th></tr></thead>
             <tbody>
                 <tr><td>SuperPOD A100</td><td>DGX A100 (8 GPU)</td><td>20 nodes (160 GPUs)</td><td>7</td><td>up to 1120 A100</td></tr>
-                <tr><td>SuperPOD H100</td><td>DGX H100 (8 GPU)</td><td>32 nodes (256 GPUs)</td><td>4</td><td>up to 1024 H100</td></tr>
-                <tr><td>SuperPOD H200</td><td>DGX H200 (8 GPU)</td><td>32 nodes (256 GPUs)</td><td>4</td><td>up to 1024 H200</td></tr>
-                <tr><td>SuperPOD GB200</td><td>GB200 NVL72 rack (72 GPU)</td><td>8 racks (576 GPUs)</td><td>4</td><td>up to 2304 B200</td></tr>
-                <tr><td>SuperPOD GB300</td><td>GB300 NVL72 rack (72 GPU)</td><td>8 racks (576 GPUs)</td><td>up to 8</td><td>up to 4608 B300</td></tr>
+                <tr><td>SuperPOD H100</td><td>DGX H100 (8 GPU)</td><td>32 nodes (256 GPUs)</td><td>4</td><td>up to 1,016 H100 (127 nodes: one node's slot goes to UFM)</td></tr>
+                <tr><td>SuperPOD H200</td><td>DGX H200 (8 GPU)</td><td>32 nodes (256 GPUs)</td><td>4</td><td>up to 1,016 H200 (127 nodes)</td></tr>
+                <tr><td>SuperPOD GB200</td><td>GB200 NVL72 rack (72 GPU)</td><td>8 racks (576 GPUs)</td><td>16</td><td>up to 9,216 Blackwell GPUs</td></tr>
+                <tr><td>SuperPOD GB300</td><td>GB300 NVL72 rack (72 GPU)</td><td>8 racks (576 GPUs)</td><td>16</td><td>up to 9,216 Blackwell Ultra GPUs</td></tr>
             </tbody>
         </table>
     </div>
@@ -1241,6 +1246,11 @@
     <div class="callout">
         <div class="callout-label">Why customers still use the reference</div>
         <p>You could redesign every aspect of a SuperPOD &mdash; pick your own switches, your own storage, your own scheduler. Hyperscalers do this all the time. But for everyone else, the reference saves 12&ndash;18 months of engineering, ships with NVIDIA support, and matches the configuration their published benchmarks were measured on. That last point matters: if your cluster doesn't look like the reference, "this MoE should train in N hours" stops being a useful prediction.</p>
+    </div>
+
+    <div class="callout">
+        <div class="callout-label">Animated companion</div>
+        <p>The SuperPOD's rail-aligned fabric rebuilt from NVIDIA's published rules, and checked against its Table 3: AI Racks Explained, <a href="https://ai-racks-explained.vercel.app/learn/05-scale-out-network" style="color: var(--accent);">chapter 5, Scale-out: the network</a>; a training job's layout across racks and its checkpoint interval: <a href="https://ai-racks-explained.vercel.app/learn/09-training-clusters" style="color: var(--accent);">chapter 9, training clusters</a>.</p>
     </div>
 </section>
 
@@ -1414,6 +1424,7 @@
 <footer class="footer">
     <p>Part of the <a href="https://github.com/BrendanJamesLynskey/LLMs#nvidia-gpu-architectures">NVIDIA GPU Architectures Series</a></p>
     <p style="margin-top: 0.5rem; font-size: 0.8rem;"><a href="https://github.com/BrendanJamesLynskey/LLMs#nvidia-gpu-architectures">Back to Series Index</a></p>
+    <p style="margin-top: 0.5rem; font-size: 0.8rem;">Animated companion site: <a href="https://ai-racks-explained.vercel.app/">AI Racks Explained</a> &mdash; the machines underneath, chip to rack, each chapter around a model-driven animation with every figure sourced.</p>
 </footer>
 
 <script>
